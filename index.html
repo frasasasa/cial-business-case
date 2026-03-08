@@ -1,0 +1,1232 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>CIAL Alimentos — Business Case POC Crédito v3</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --surface: #1a1d27;
+    --surface2: #232733;
+    --border: #2e3345;
+    --text: #e4e6f0;
+    --text-dim: #8b8fa3;
+    --accent: #6c5ce7;
+    --accent-light: #a29bfe;
+    --green: #00cec9;
+    --green-dim: #00b894;
+    --orange: #fdcb6e;
+    --red: #ff7675;
+    --blue: #74b9ff;
+    --yellow: #ffeaa7;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    line-height: 1.6;
+    min-height: 100vh;
+  }
+
+  .container {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 40px 24px 80px;
+  }
+
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    padding-bottom: 32px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .header-label {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    background: rgba(108,92,231,0.12);
+    padding: 6px 16px;
+    border-radius: 20px;
+    margin-bottom: 20px;
+  }
+
+  .header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    letter-spacing: -0.5px;
+  }
+
+  .header p {
+    color: var(--text-dim);
+    font-size: 15px;
+    max-width: 600px;
+    margin: 0 auto;
+  }
+
+  .header-meta {
+    display: flex;
+    justify-content: center;
+    gap: 24px;
+    margin-top: 20px;
+    font-size: 13px;
+    color: var(--text-dim);
+    flex-wrap: wrap;
+  }
+
+  .version-tag {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: var(--green);
+    background: rgba(0,206,201,0.12);
+    padding: 3px 10px;
+    border-radius: 10px;
+    margin-top: 12px;
+  }
+
+  .section {
+    margin-bottom: 48px;
+  }
+
+  .section-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--accent-light);
+    margin-bottom: 20px;
+  }
+
+  .context-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 16px;
+    margin-bottom: 32px;
+  }
+
+  .context-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 20px;
+  }
+
+  .context-card .label {
+    font-size: 12px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .context-card .value {
+    font-size: 28px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .context-card .detail {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .context-card.data-card {
+    border-color: rgba(0,206,201,0.3);
+  }
+
+  .context-card.data-card .label::after {
+    content: ' · SAP';
+    color: var(--green-dim);
+    font-weight: 700;
+  }
+
+  .context-card.warning-card {
+    border-color: rgba(253,203,110,0.3);
+  }
+
+  .context-card.warning-card .value {
+    color: var(--orange);
+  }
+
+  .context-card.alert-card {
+    border-color: rgba(255,118,117,0.3);
+  }
+
+  .context-card.alert-card .value {
+    color: var(--red);
+  }
+
+  /* Data source badge */
+  .data-badge {
+    display: inline-block;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 3px 8px;
+    border-radius: 6px;
+    margin-bottom: 12px;
+  }
+
+  .data-badge.real {
+    background: rgba(0,206,201,0.15);
+    color: var(--green);
+  }
+
+  .data-badge.estimated {
+    background: rgba(253,203,110,0.15);
+    color: var(--orange);
+  }
+
+  .data-badge.declared {
+    background: rgba(116,185,255,0.15);
+    color: var(--blue);
+  }
+
+  /* Raw data table */
+  .raw-data {
+    background: var(--surface);
+    border: 1px solid rgba(0,206,201,0.3);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+  }
+
+  .raw-data-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .raw-data table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  .raw-data th {
+    text-align: left;
+    padding: 10px 16px;
+    color: var(--text-dim);
+    font-weight: 600;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  .raw-data td {
+    padding: 10px 16px;
+    border-bottom: 1px solid rgba(46,51,69,0.5);
+  }
+
+  .raw-data tr:last-child td {
+    border-bottom: none;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .raw-data .num {
+    text-align: right;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-weight: 600;
+  }
+
+  .raw-data .derived {
+    color: var(--accent-light);
+  }
+
+  .raw-data .extrapolated {
+    color: var(--orange);
+  }
+
+  .narrative {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 28px;
+    margin-bottom: 32px;
+    font-size: 15px;
+    line-height: 1.8;
+  }
+
+  .narrative p { margin-bottom: 16px; }
+  .narrative p:last-child { margin-bottom: 0; }
+  .narrative strong { color: var(--green); }
+  .narrative .highlight { color: var(--orange); font-weight: 600; }
+
+  .insight-box {
+    background: rgba(0,206,201,0.06);
+    border: 1px solid rgba(0,206,201,0.2);
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 32px;
+    font-size: 14px;
+    line-height: 1.7;
+  }
+
+  .insight-box .insight-title {
+    font-weight: 700;
+    color: var(--green);
+    margin-bottom: 12px;
+    font-size: 15px;
+  }
+
+  .insight-box p { margin-bottom: 10px; }
+  .insight-box p:last-child { margin-bottom: 0; }
+
+  .insight-box code {
+    background: rgba(0,0,0,0.3);
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+    color: var(--blue);
+  }
+
+  /* KPI Card */
+  .kpi-card {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 32px;
+    margin-bottom: 28px;
+    transition: border-color 0.2s;
+  }
+
+  .kpi-card:hover { border-color: var(--accent); }
+
+  .kpi-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    flex-wrap: wrap;
+    gap: 12px;
+  }
+
+  .kpi-header h3 {
+    font-size: 20px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .kpi-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: var(--accent);
+    color: white;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 700;
+    flex-shrink: 0;
+  }
+
+  .kpi-badge {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 12px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+
+  .badge-validated { background: rgba(0,206,201,0.15); color: var(--green); }
+  .badge-easy { background: rgba(0,206,201,0.15); color: var(--green); }
+  .badge-medium { background: rgba(253,203,110,0.15); color: var(--orange); }
+  .badge-hard { background: rgba(255,118,117,0.15); color: var(--red); }
+
+  .kpi-description {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 20px;
+    line-height: 1.7;
+    max-width: 800px;
+  }
+
+  .kpi-formula {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 16px 20px;
+    margin-bottom: 20px;
+    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-size: 13px;
+    color: var(--blue);
+    overflow-x: auto;
+  }
+
+  .kpi-data-source {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-bottom: 24px;
+    padding: 12px 16px;
+    background: rgba(108,92,231,0.06);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+  }
+
+  .kpi-data-source strong { color: var(--accent-light); }
+
+  .calculator {
+    background: var(--surface2);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 24px;
+  }
+
+  .calc-title {
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-dim);
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .calc-title::before { content: '\26A1'; }
+
+  .calc-inputs {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
+  }
+
+  .input-group {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+
+  .input-group label {
+    font-size: 12px;
+    color: var(--text-dim);
+    font-weight: 500;
+  }
+
+  .input-group input {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    padding: 10px 14px;
+    color: var(--text);
+    font-size: 15px;
+    font-weight: 600;
+    font-family: inherit;
+    transition: border-color 0.2s;
+    width: 100%;
+  }
+
+  .input-group input:focus {
+    outline: none;
+    border-color: var(--accent);
+  }
+
+  .input-group input.real-data {
+    border-color: rgba(0,206,201,0.4);
+    background: rgba(0,206,201,0.04);
+  }
+
+  .input-group .unit {
+    font-size: 11px;
+    color: var(--text-dim);
+    font-style: italic;
+  }
+
+  .input-group .unit.validated {
+    color: var(--green);
+    font-weight: 600;
+    font-style: normal;
+  }
+
+  .calc-results {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 16px;
+    padding-top: 20px;
+    border-top: 1px solid var(--border);
+  }
+
+  .calc-result {
+    text-align: center;
+    padding: 16px;
+    background: var(--bg);
+    border-radius: 10px;
+  }
+
+  .calc-result .result-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 6px;
+  }
+
+  .calc-result .result-value {
+    font-size: 24px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .calc-result .result-detail {
+    font-size: 12px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .calc-result.highlight-result .result-value { color: var(--orange); }
+
+  /* ROI Section */
+  .roi-section {
+    background: linear-gradient(135deg, rgba(108,92,231,0.1), rgba(0,206,201,0.08));
+    border: 1px solid var(--accent);
+    border-radius: 16px;
+    padding: 36px;
+    margin-top: 48px;
+  }
+
+  .roi-section h2 {
+    font-size: 22px;
+    margin-bottom: 16px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .roi-description {
+    color: var(--text-dim);
+    font-size: 14px;
+    margin-bottom: 28px;
+    line-height: 1.7;
+  }
+
+  .roi-calculator .calc-inputs {
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  }
+
+  .roi-total {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 20px;
+    margin-top: 24px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+  }
+
+  .roi-card {
+    text-align: center;
+    padding: 24px;
+    background: var(--bg);
+    border-radius: 12px;
+    border: 1px solid var(--border);
+  }
+
+  .roi-card .roi-label {
+    font-size: 11px;
+    color: var(--text-dim);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .roi-card .roi-value {
+    font-size: 32px;
+    font-weight: 700;
+    color: var(--green);
+  }
+
+  .roi-card .roi-sub {
+    font-size: 13px;
+    color: var(--text-dim);
+    margin-top: 4px;
+  }
+
+  .roi-card.accent .roi-value { color: var(--accent-light); }
+  .roi-card.warning .roi-value { color: var(--orange); }
+
+  /* Timeline */
+  .timeline {
+    position: relative;
+    padding-left: 28px;
+    margin-bottom: 32px;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 8px;
+    top: 4px;
+    bottom: 4px;
+    width: 2px;
+    background: var(--border);
+  }
+
+  .timeline-item {
+    position: relative;
+    margin-bottom: 20px;
+    padding: 16px 20px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+  }
+
+  .timeline-item::before {
+    content: '';
+    position: absolute;
+    left: -24px;
+    top: 20px;
+    width: 10px;
+    height: 10px;
+    background: var(--accent);
+    border-radius: 50%;
+    border: 2px solid var(--bg);
+  }
+
+  .timeline-item.current::before {
+    background: var(--green);
+    box-shadow: 0 0 8px rgba(0,206,201,0.5);
+  }
+
+  .timeline-item.current {
+    border-color: rgba(0,206,201,0.3);
+  }
+
+  .timeline-date {
+    font-size: 12px;
+    color: var(--accent-light);
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .timeline-title {
+    font-size: 15px;
+    font-weight: 600;
+    margin-bottom: 4px;
+  }
+
+  .timeline-desc {
+    font-size: 13px;
+    color: var(--text-dim);
+  }
+
+  .footer {
+    margin-top: 60px;
+    padding-top: 24px;
+    border-top: 1px solid var(--border);
+    text-align: center;
+    font-size: 12px;
+    color: var(--text-dim);
+  }
+
+  @media (max-width: 600px) {
+    .container { padding: 24px 16px 60px; }
+    .header h1 { font-size: 24px; }
+    .kpi-header h3 { font-size: 17px; }
+    .calc-inputs { grid-template-columns: 1fr; }
+    .roi-card .roi-value { font-size: 24px; }
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-label">Confidencial · Yom × Estratia</div>
+    <h1>CIAL Alimentos — Business Case</h1>
+    <p>POC Automatización del Ciclo de Crédito: Panel de Gestión de Líneas + Torre de Control de Pedidos</p>
+    <div class="header-meta">
+      <span>📅 8 Marzo 2026</span>
+      <span>📋 20+ reuniones analizadas</span>
+      <span>📊 Datos reales SAP · 1 día filtro completo</span>
+    </div>
+    <div class="version-tag">v3.0 — Con datos reales del filtro SAP (Catalina Escobedo, 7 Mar)</div>
+  </div>
+
+  <!-- DATA REAL SAP -->
+  <div class="section">
+    <div class="section-title">Data real — Filtro de crédito SAP (1 día)</div>
+
+    <div class="raw-data">
+      <div class="raw-data-title">📊 Descarga Filtro SAP — Datos de un día completo</div>
+      <table>
+        <thead>
+          <tr>
+            <th>Estado Pedidos</th>
+            <th class="num">Total pedidos</th>
+            <th class="num">Monto pedidos ($)</th>
+            <th class="num derived">Ticket promedio ($)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Se ha liberado</td>
+            <td class="num">854</td>
+            <td class="num">123.742.635</td>
+            <td class="num derived">144.897</td>
+          </tr>
+          <tr>
+            <td>Rechazado Límite de Crédito</td>
+            <td class="num">30</td>
+            <td class="num">6.730.086</td>
+            <td class="num derived">224.336</td>
+          </tr>
+          <tr>
+            <td>Rechazado partidas vencidas</td>
+            <td class="num">6</td>
+            <td class="num">378.390</td>
+            <td class="num derived">63.065</td>
+          </tr>
+          <tr>
+            <td><strong>Total general</strong></td>
+            <td class="num">890</td>
+            <td class="num">130.851.111</td>
+            <td class="num derived">147.024</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Extrapolación -->
+    <div class="context-grid">
+      <div class="context-card data-card">
+        <div class="label">Pedidos en filtro / día</div>
+        <div class="value">890</div>
+        <div class="detail">Dato real SAP · 1 día completo</div>
+      </div>
+      <div class="context-card data-card">
+        <div class="label">Monto diario en filtro</div>
+        <div class="value">$131M</div>
+        <div class="detail">$130.851.111 en 1 día</div>
+      </div>
+      <div class="context-card data-card">
+        <div class="label">Liberados / día</div>
+        <div class="value">854</div>
+        <div class="detail">96% del filtro · $124M</div>
+      </div>
+      <div class="context-card data-card">
+        <div class="label">Rechazos crédito / día</div>
+        <div class="value">30</div>
+        <div class="detail">$6.7M · Ticket $224K</div>
+      </div>
+      <div class="context-card warning-card">
+        <div class="label">Extrapolación mensual</div>
+        <div class="value">19.580</div>
+        <div class="detail">890 × 22 días hábiles</div>
+      </div>
+      <div class="context-card warning-card">
+        <div class="label">Rechazos crédito / mes</div>
+        <div class="value">660</div>
+        <div class="detail">30/día × 22 · $148M</div>
+      </div>
+      <div class="context-card warning-card">
+        <div class="label">Rechazos crédito / año</div>
+        <div class="value">$1.776M</div>
+        <div class="detail">$148M × 12 meses</div>
+      </div>
+      <div class="context-card">
+        <div class="label">Horas-hombre / día</div>
+        <div class="value">13h</div>
+        <div class="detail">1 persona filtro + 1 parcial evaluación</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- INSIGHT: $680M -->
+  <div class="section">
+    <div class="section-title">Diagnóstico</div>
+
+    <div class="insight-box">
+      <div class="insight-title">✅ Los $680M declarados ahora sí cuadran — y son conservadores</div>
+      <p>En la reunión del 5 de marzo se declaró una proyección anual de <strong style="color:var(--green)">$680M en rechazos por crédito</strong>. Con los datos estimados en reunión ($30-38K de ticket) no cuadraba. Ahora con la data real de SAP:</p>
+      <p><code>30 rechazos/día × $224K ticket × 22 días × 12 meses = $1.776M</code></p>
+      <p>Los $680M representan apenas el <strong style="color:var(--orange)">38% de lo que arroja la extrapolación</strong>. CIAL fue conservadora en su estimación, o bien ajustó por estacionalidad / días atípicos. En cualquier caso, los $680M son defendibles y probablemente un piso.</p>
+      <p>El dato que reconcilia todo es el <strong style="color:var(--green)">ticket real de $224K,/strong> (no $30-38K como se dijo en reunión). Tiene sentido: los pedidos que topan el límite de crédito son justamente los más grandes.</p>
+    </div>
+
+    <div class="narrative">
+      <p>CIAL Alimentos opera con <strong>220 vendedores</strong> atendiendo <strong>35,000+ clientes</strong> en canal tradicional bajo modelo de preventa. Cada día, <strong>890 pedidos pasan por el filtro de crédito</strong> — de los cuales 854 se liberan manualmente y 36 se rechazan (30 por límite, 6 por partidas vencidas).</p>
+      <p>El volumen real del filtro es mayor al estimado previamente: <span class="highlight">~19,600 pedidos/mes</span> pasan por el filtro (vs. 13,000 estimados en reuniones anteriores), moviendo <span class="highlight">$2,879M mensuales</span>. Dos personas dedican 13 horas combinadas al día al proceso manual.</p>
+      <p>De los 30 rechazos diarios por crédito, la mayoría son correctos (morosidad real). Solo ~5% serían recuperables con mejor scoring. Pero el ticket promedio es de <strong>$224K</strong> — no $30-38K como se dijo en reunión. Esto significa que cada rechazo recuperado tiene un impacto 6-7x mayor al esperado.</p>
+      <p>La migración a SAP S/4HANA empeoró la situación: se perdieron funcionalidades del filtro (tolerancias automáticas). La conciliación de pagos tiene latencia de hasta <span class="highlight">72 horas</span>. El piloto en GCP cuesta <strong>$20/mes vs $450/mes en SAP BTP</strong>.</p>
+    </div>
+  </div>
+
+  <!-- CRONOLOGÍA -->
+  <div class="section">
+    <div class="section-title">Cronología del proyecto</div>
+    <div class="timeline">
+      <div class="timeline-item">
+        <div class="timeline-date">2 Dic 2025</div>
+        <div class="timeline-title">Reunión exploratoria con Marcelo Alvarado (CEO)</div>
+        <div class="timeline-desc">Mapeo inicial: 220 vendedores, 35K clientes, modelo preventa. Interés en POC 3 meses.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">12 Dic 2025</div>
+        <div class="timeline-title">Reunión con CFO (Juvenal Letelier)</div>
+        <div class="timeline-desc">Doble track: programa adopción IA + proyecto automatización cobranza con FDT.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">23 Dic 2025</div>
+        <div class="timeline-title">Sesión técnica + Reunión RRHH</div>
+        <div class="timeline-desc">Gap: 95% retención clientes vs 75% retención ingresos. Metodología 3x3 con Carolina Cereceda.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">30 Dic 2025</div>
+        <div class="timeline-title">Demo Yom + Pre-kickoff FDT</div>
+        <div class="timeline-desc">FDT definido: 12 semanas, 200 UF/mes. Equipo: Carlos, Felipe, Luis.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">21-28 Ene 2026</div>
+        <div class="timeline-title">Workshop completo + Julio Tapia</div>
+        <div class="timeline-desc">Mapeo end-to-end. Datos iniciales: 13K notas liberadas, $1,891M. Líneas desactualizadas como dolor central.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">3-9 Feb 2026</div>
+        <div class="timeline-title">TI + Finanzas + Priorización</div>
+        <div class="timeline-desc">SAP S/4HANA + GCP + DataSphere. Matriz McKinsey. Torre de Control y Panel de Líneas como prioridades.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">19-25 Feb 2026</div>
+        <div class="timeline-title">Validación técnica y definición final</div>
+        <div class="timeline-desc">APIs SAP mapeadas. Scoring FBL5N + Equifax. BigQuery + Looker Studio. Franco revisa conectividad.</div>
+      </div>
+      <div class="timeline-item">
+        <div class="timeline-date">3-5 Mar 2026</div>
+        <div class="timeline-title">KPIs definidos + Reunión Catalina Escobedo</div>
+        <div class="timeline-desc">Nicolás propone 3 KPIs. Se validan 655 rechazos enero (dato pre-data real). Se confirma reunión Juvenal lunes.</div>
+      </div>
+      <div class="timeline-item current">
+        <div class="timeline-date">7-8 Mar 2026</div>
+        <div class="timeline-title">Data real del filtro SAP recibida</div>
+        <div class="timeline-desc">Catalina envía datos de 1 día completo del filtro. 890 pedidos, $131M. Ticket real de rechazos: $224K. Los $680M son piso, no techo. Presentación a Juvenal inminente.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="section">
+    <div class="section-title">KPIs — Calculadoras de impacto con datos reales</div>
+
+    <!-- KPI 1 -->
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <h3><span class="kpi-number">1</span> Venta Perdida por Bloqueo de Crédito</h3>
+        <span class="kpi-badge badge-validated">Data real SAP</span>
+      </div>
+      <div class="kpi-description">
+        Mide el valor de los pedidos que no se facturan por bloqueo. Con data real sabemos que el ticket de rechazos por crédito es $224K (no $30-38K). Solo ~5% de los rechazos son recuperables (el resto es morosidad correcta), pero cada uno recuperado vale 6-7x más de lo estimado. El segundo componente — venta perdida por demora en la liberación de los 854 diarios — sigue siendo relevante.
+      </div>
+      <div class="kpi-formula">
+        Venta Perdida = (Rechazos crédito/día × Ticket real × %recuperable × días × 12) + (Liberados/día × %perdidos por demora × Ticket liberado × días × 12)
+      </div>
+      <div class="kpi-data-source">
+        <strong>Fuente:</strong> SAP VA05 (dato real 1 día) · 30 rechazos crédito/día a $224K · 854 liberados/día a $145K · Filtrar por motivo "exceso línea de crédito"
+      </div>
+
+      <div class="calculator">
+        <div class="calc-title">Calculadora de impacto</div>
+        <div class="calc-inputs">
+          <div class="input-group">
+            <label>Rechazos crédito / día</label>
+            <input type="number" id="kpi1-rechazos-dia" value="30" oninput="calcKPI1()" class="real-data">
+            <span class="unit validated">✓ Dato real SAP</span>
+          </div>
+          <div class="input-group">
+            <label>Ticket promedio rechazado ($)</label>
+            <input type="number" id="kpi1-ticket-rechazado" value="224336" oninput="calcKPI1()" class="real-data">
+            <span class="unit validated">✓ $6.730.086 ÷ 30 pedidos</span>
+          </div>
+          <div class="input-group">
+            <label>% recuperable (mejor scoring)</label>
+            <input type="number" id="kpi1-pct-recuperable" value="5" oninput="calcKPI1()">
+            <span class="unit">Validado en reunión 5 Mar</span>
+          </div>
+          <div class="input-group">
+            <label>Liberaciones manuales / día</label>
+            <input type="number" id="kpi1-liberados-dia" value="854" oninput="calcKPI1()" class="real-data">
+            <span class="unit validated">✓ Dato real SAP</span>
+          </div>
+          <div class="input-group">
+            <label>% liberados que pierden venta por demora</label>
+            <input type="number" id="kpi1-pct-demora" value="2" oninput="calcKPI1()">
+            <span class="unit">Estimación conservadora</span>
+          </div>
+          <div class="input-group">
+            <label>Ticket promedio liberado ($)</label>
+            <input type="number" id="kpi1-ticket-liberado" value="144897" oninput="calcKPI1()" class="real-data">
+            <span class="unit validated">✓ $123.7M ÷ 854 pedidos</span>
+          </div>
+          <div class="input-group">
+            <label>Días hábiles / mes</label>
+            <input type="number" id="kpi1-dias" value="22" oninput="calcKPI1()">
+          </div>
+        </div>
+        <div class="calc-results">
+          <div class="calc-result">
+            <div class="result-label">Rechazos recuperables / mes</div>
+            <div class="result-value" id="kpi1-recup-mes">$7M</div>
+            <div class="result-detail">5% de 660 × $224K</div>
+          </div>
+          <div class="calc-result">
+            <div class="result-label">Venta perdida por demora / mes</div>
+            <div class="result-value" id="kpi1-demora-mes">$56M</div>
+            <div class="result-detail">2% de 18.788 × $145K</div>
+          </div>
+          <div class="calc-result highlight-result">
+            <div class="result-label">Venta recuperable / mes</div>
+            <div class="result-value" id="kpi1-total-mes">$63M</div>
+          </div>
+          <div class="calc-result highlight-result">
+            <div class="result-label">Impacto anual</div>
+            <div class="result-value" id="kpi1-anual">$757M</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI 2 -->
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <h3><span class="kpi-number">2</span> Costo Operativo del Desbloqueo Manual</h3>
+        <span class="kpi-badge badge-validated">Data directa</span>
+      </div>
+      <div class="kpi-description">
+        Costo de 2 personas dedicando 13 horas combinadas al día al proceso manual de liberación. Con data real, sabemos que procesan 890 pedidos/día ($131M). La Torre de Control automatiza las decisiones simples (scoring + reglas de negocio): automático bajo 10 UF, recomendación con evaluación humana sobre 10 UF.
+      </div>
+      <div class="kpi-formula">
+        Ahorro = (Horas-hombre/día × Días × Costo hora × % automatizable)
+      </div>
+      <div class="kpi-data-source">
+        <strong>Fuente:</strong> Dato directo equipo crédito CIAL · 1 persona 100% filtro + 1 parcial evaluación · Throughput real: 890 pedidos/día
+      </div>
+
+      <div class="calculator">
+        <div class="calc-title">Calculadora de impacto</div>
+        <div class="calc-inputs">
+          <div class="input-group">
+            <label>Horas-hombre dedicadas / día</label>
+            <input type="number" id="kpi2-hh-dia" value="13" oninput="calcKPI2()">
+            <span class="unit">8h filtro + 5h evaluación</span>
+          </div>
+          <div class="input-group">
+            <label>Días hábiles / mes</label>
+            <input type="number" id="kpi2-dias" value="22" oninput="calcKPI2()">
+          </div>
+          <div class="input-group">
+            <label>Costo hora equipo ($)</label>
+            <input type="number" id="kpi2-costo-hora" value="8000" oninput="calcKPI2()">
+            <span class="unit">Pesos / hora</span>
+          </div>
+          <div class="input-group">
+            <label>% automatizable</label>
+            <input type="number" id="kpi2-pct-auto" value="75" oninput="calcKPI2()">
+            <span class="unit">Automático &lt;10 UF, scoring &gt;10 UF</span>
+          </div>
+        </div>
+        <div class="calc-results">
+          <div class="calc-result">
+            <div class="result-label">Costo operativo actual / mes</div>
+            <div class="result-value" id="kpi2-costo-mes">$2.3M</div>
+          </div>
+          <div class="calc-result">
+            <div class="result-label">Horas liberadas / mes</div>
+            <div class="result-value" id="kpi2-horas-lib">215h</div>
+          </div>
+          <div class="calc-result highlight-result">
+            <div class="result-label">Ahorro operativo / mes</div>
+            <div class="result-value" id="kpi2-ahorro">$1.7M</div>
+          </div>
+          <div class="calc-result">
+            <div class="result-label">Reducción latencia</div>
+            <div class="result-value" id="kpi2-latencia">72h → ~5min</div>
+            <div class="result-detail">Casos automatizados</div>
+          </div>
+          <div class="calc-result highlight-result">
+            <div class="result-label">Ahorro anual</div>
+            <div class="result-value" id="kpi2-anual">$21M</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- KPI 3 -->
+    <div class="kpi-card">
+      <div class="kpi-header">
+        <h3><span class="kpi-number">3</span> Optimización Proactiva de Líneas de Crédito</h3>
+        <span class="kpi-badge badge-hard">Requiere cubo nuevo</span>
+      </div>
+      <div class="kpi-description">
+        El KPI de mayor impacto potencial. Ajustar proactivamente las líneas para que reflejen la capacidad real de compra del cliente, previniendo bloqueos antes de que ocurran. Con el ticket real de $224K por rechazo, cada bloqueo evitado vale significativamente más. El sistema propone aumentos automáticos bajo 10 UF y recomienda ajustes con evaluación humana sobre 10 UF.
+      </div>
+      <div class="kpi-formula">
+        Impacto = (Clientes subdimensionados × Bloqueos evitables × Ticket real × %eliminable × %conversión)
+      </div>
+      <div class="kpi-data-source">
+        <strong>Fuente:</strong> SAP FBL5N + UKM-BP-DISPLAY + ZSD · Requiere cubo crédito/cobranza en BigQuery · Scoring externo: Equifax (no integrado hoy)
+      </div>
+
+      <div class="calculator">
+        <div class="calc-title">Calculadora de impacto</div>
+        <div class="calc-inputs">
+          <div class="input-group">
+            <label>Clientes con línea subdimensionada</label>
+            <input type="number" id="kpi3-subdimensionados" value="4000" oninput="calcKPI3()">
+            <span class="unit">~10% de 40K clientes</span>
+          </div>
+          <div class="input-group">
+            <label>Bloqueos evitables / cliente / mes</label>
+            <input type="number" id="kpi3-bloq-cliente" value="1.5" oninput="calcKPI3()" step="0.1">
+          </div>
+          <div class="input-group">
+            <label>Ticket promedio bloqueado ($)</label>
+            <input type="number" id="kpi3-ticket" value="224336" oninput="calcKPI3()" class="real-data">
+            <span class="unit validated">✓ Ticket real rechazos crédito</span>
+          </div>
+          <div class="input-group">
+            <label>% eliminable ajustando líneas</label>
+            <input type="number" id="kpi3-pct-elim" value="60" oninput="calcKPI3()">
+            <span class="unit">Bloqueos evitables proactivamente</span>
+          </div>
+          <div class="input-group">
+            <label>% que se convierte en venta</label>
+            <input type="number" id="kpi3-pct-venta" value="85" oninput="calcKPI3()">
+          </div>
+        </div>
+        <div class="calc-results">
+          <div class="calc-result">
+            <div class="result-label">Bloqueos evitables / mes</div>
+            <div class="result-value" id="kpi3-bloq-mes">6.000</div>
+          </div>
+          <div class="calc-result">
+            <div class="result-label">Fricción eliminable / mes</div>
+            <div class="result-value" id="kpi3-friccion">$1.346M</div>
+          </div>
+          <div class="calc-result highlight-result">
+            <div class="result-label">Venta recuperable / mes</div>
+            <div class="result-value" id="kpi3-recuperable">$686M</div>
+          </div>
+          <div class="calc-result highlight-result">
+            <div class="result-label">Impacto anual</div>
+            <div class="result-value" id="kpi3-anual">$8.237M</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ROI CONSOLIDADO -->
+  <div class="roi-section">
+    <h2>📐 Modelo económico consolidado</h2>
+    <div class="roi-description">
+      La POC de 3 meses (200 UF/mes) valida la hipótesis y define el baseline con datos reales. Los inputs marcados con ✓ ya están validados con data SAP. Los impactos de abajo son anuales para el proyecto completo. El fee del proyecto se dimensiona como porcentaje del ahorro demostrado post-POC.
+    </div>
+
+    <div class="roi-calculator">
+      <div class="calc-title">Parámetros del modelo</div>
+      <div class="calc-inputs">
+        <div class="input-group">
+          <label>Costo POC (UF/mes)</label>
+          <input type="number" id="roi-poc-uf" value="200" oninput="calcROI()">
+        </div>
+        <div class="input-group">
+          <label>Duración POC (meses)</label>
+          <input type="number" id="roi-poc-meses" value="3" oninput="calcROI()">
+        </div>
+        <div class="input-group">
+          <label>Valor UF ($)</label>
+          <input type="number" id="roi-uf-value" value="38500" oninput="calcROI()">
+        </div>
+        <div class="input-group">
+          <label>% del ahorro como fee proyecto</label>
+          <input type="number" id="roi-fee-pct" value="20" oninput="calcROI()">
+          <span class="unit">Nuestro margen sobre el ROI</span>
+        </div>
+        <div class="input-group">
+          <label>Factor de confianza (%)</label>
+          <input type="number" id="roi-confianza" value="40" oninput="calcROI()">
+          <span class="unit">Descuento conservador pre-POC</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="roi-total">
+      <div class="roi-card">
+        <div class="roi-label">Costo total POC</div>
+        <div class="roi-value" id="roi-costo-poc">$23M</div>
+        <div class="roi-sub">Inversión para validar hipótesis</div>
+      </div>
+      <div class="roi-card accent">
+        <div class="roi-label">Impacto bruto anual</div>
+        <div class="roi-value" id="roi-impacto-bruto">$9.015M</div>
+        <div class="roi-sub" id="roi-impacto-sub">KPI1 + KPI2 + KPI3</div>
+      </div>
+      <div class="roi-card warning">
+        <div class="roi-label">Impacto ajustado (confianza)</div>
+        <div class="roi-value" id="roi-impacto-ajustado">$3.606M</div>
+        <div class="roi-sub" id="roi-ajustado-sub">Con 40% factor de confianza</div>
+      </div>
+      <div class="roi-card">
+        <div class="roi-label">Fee proyecto (anual)</div>
+        <div class="roi-value" id="roi-fee">$721M</div>
+        <div class="roi-sub" id="roi-fee-sub">20% del ahorro generado</div>
+      </div>
+      <div class="roi-card accent">
+        <div class="roi-label">Ahorro neto CIAL (anual)</div>
+        <div class="roi-value" id="roi-ahorro-cial">$2.885M</div>
+        <div class="roi-sub">Después de nuestro fee</div>
+      </div>
+      <div class="roi-card warning">
+        <div class="roi-label">ROI para CIAL</div>
+        <div class="roi-value" id="roi-ratio">4.0x</div>
+        <div class="roi-sub">Por cada peso invertido</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="footer">
+    Análisis: 20+ reuniones (Dic 2025 – Mar 2026) · Datos base: SAP filtro crédito (1 día real, 7 Mar 2026) · Yom × Estratia · v3.0
+  </div>
+
+</div>
+
+<script>
+function fmtM(n) {
+  const m = Math.round(n / 1e6);
+  return '$' + m.toLocaleString('es-CL') + 'M';
+}
+
+function fmtNum(n) {
+  return n.toLocaleString('es-CL', {maximumFractionDigits:0});
+}
+
+function v(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function calcKPI1() {
+  const rechDia = v('kpi1-rechazos-dia');
+  const ticketRech = v('kpi1-ticket-rechazado');
+  const pctRecup = v('kpi1-pct-recuperable') / 100;
+  const libDia = v('kpi1-liberados-dia');
+  const pctDemora = v('kpi1-pct-demora') / 100;
+  const ticketLib = v('kpi1-ticket-liberado');
+  const dias = v('kpi1-dias');
+
+  // Rechazos recuperables mensual
+  const recupMes = rechDia * ticketRech * pctRecup * dias;
+  // Venta perdida por demora en liberación
+  const demoraMes = libDia * pctDemora * ticketLib * dias;
+  // Total mensual
+  const totalMes = recupMes + demoraMes;
+  const anual = totalMes * 12;
+
+  document.getElementById('kpi1-recup-mes').textContent = fmtM(recupMes);
+  document.getElementById('kpi1-demora-mes').textContent = fmtM(demoraMes);
+  document.getElementById('kpi1-total-mes').textContent = fmtM(totalMes);
+  document.getElementById('kpi1-anual').textContent = fmtM(anual);
+
+  calcROI();
+}
+
+function calcKPI2() {
+  const hhDia = v('kpi2-hh-dia');
+  const dias = v('kpi2-dias');
+  const costoHora = v('kpi2-costo-hora');
+  const pctAuto = v('kpi2-pct-auto') / 100;
+
+  const costoMes = hhDia * dias * costoHora;
+  const horasLib = hhDia * dias * pctAuto;
+  const ahorroMes = costoMes * pctAuto;
+  const anual = ahorroMes * 12;
+
+  document.getElementById('kpi2-costo-mes').textContent = fmtM(costoMes);
+  document.getElementById('kpi2-horas-lib').textContent = Math.round(horasLib) + 'h';
+  document.getElementById('kpi2-ahorro').textContent = fmtM(ahorroMes);
+  document.getElementById('kpi2-anual').textContent = fmtM(anual);
+
+  calcROI();
+}
+
+function calcKPI3() {
+  const subdim = v('kpi3-subdimensionados');
+  const bloqCliente = v('kpi3-bloq-cliente');
+  const ticket = v('kpi3-ticket');
+  const pctElim = v('kpi3-pct-elim') / 100;
+  const pctVenta = v('kpi3-pct-venta') / 100;
+
+  const bloqMes = subdim * bloqCliente;
+  const friccion = bloqMes * ticket;
+  const recuperable = friccion * pctElim * pctVenta;
+  const anual = recuperable * 12;
+
+  document.getElementById('kpi3-bloq-mes').textContent = fmtNum(bloqMes);
+  document.getElementById('kpi3-friccion').textContent = fmtM(friccion);
+  document.getElementById('kpi3-recuperable').textContent = fmtM(recuperable);
+  document.getElementById('kpi3-anual').textContent = fmtM(anual);
+
+  calcROI();
+}
+
+function calcROI() {
+  const pocUF = v('roi-poc-uf');
+  const pocMeses = v('roi-poc-meses');
+  const ufValue = v('roi-uf-value');
+  const feePct = v('roi-fee-pct') / 100;
+  const confianza = v('roi-confianza') / 100;
+
+  const costoPoc = pocUF * pocMeses * ufValue;
+
+  const parseM = (s) => {
+    const n = parseFloat(s.replace('$','').replace(/\./g,'').replace('M','').replace(',','.'));
+    return isNaN(n) ? 0 : n * 1e6;
+  };
+
+  const kpi1Anual = parseM(document.getElementById('kpi1-anual').textContent);
+  const kpi2Anual = parseM(document.getElementById('kpi2-anual').textContent);
+  const kpi3Anual = parseM(document.getElementById('kpi3-anual').textContent);
+
+  const impactoBruto = kpi1Anual + kpi2Anual + kpi3Anual;
+  const impactoAjustado = impactoBruto * confianza;
+  const fee = impactoAjustado * feePct;
+  const ahorroCial = impactoAjustado - fee;
+  const roiRatio = fee > 0 ? (ahorroCial / fee) : 0;
+
+  document.getElementById('roi-costo-poc').textContent = fmtM(costoPoc);
+  document.getElementById('roi-impacto-bruto').textContent = fmtM(impactoBruto);
+  document.getElementById('roi-impacto-ajustado').textContent = fmtM(impactoAjustado);
+  document.getElementById('roi-ajustado-sub').textContent = 'Con ' + Math.round(confianza*100) + '% factor de confianza';
+  document.getElementById('roi-fee').textContent = fmtM(fee);
+  document.getElementById('roi-fee-sub').textContent = Math.round(feePct*100) + '% del ahorro generado';
+  document.getElementById('roi-ahorro-cial').textContent = fmtM(ahorroCial);
+  document.getElementById('roi-ratio').textContent = roiRatio.toFixed(1) + 'x';
+}
+
+// Init
+calcKPI1();
+calcKPI2();
+calcKPI3();
+</script>
+</body>
+</html>
